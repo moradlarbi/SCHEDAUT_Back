@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { getPassword } from "../models/authModels.js"; // Assurez-vous que ce modèle est correct
+import { getPassword } from "../models/authModels.js";
 
 async function isUserMidd(req, res, next) {
   try {

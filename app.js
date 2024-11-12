@@ -24,7 +24,7 @@ app.use(cors(corsOptions));
 
 // Additional CORS header setting to cover all bases
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://upgraded-funicular-5r6j9x5xr77c4w9p-3001.app.github.dev');
+  res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.header('Access-Control-Allow-Credentials', 'true');

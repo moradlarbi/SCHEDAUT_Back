@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { getPassword, getUserByEmail, createUser, getUser } from '../models/authModels.js';
 import jwt from 'jsonwebtoken';
 import isUserMidd from '../middlewares/authentification.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 const router = express.Router();
 
@@ -32,7 +32,6 @@ router.post(
 
       // Hash du mot de passe
       const hashedPassword = await bcrypt.hash(password, 10);
-
       // Créer un nouvel utilisateur
       const newUser = await createUser({
         email,
@@ -70,15 +69,17 @@ router.post(
       }
 
       // Vérifier le mot de passe
-      const isPasswordCorrect = await bcrypt.compare(password, user.password);
+      console.log(user)
+      const isPasswordCorrect = await bcrypt.compareSync(password, user.password);
+      console.log(isPasswordCorrect)
       if (!isPasswordCorrect) {
-        return res.status(401).json({ status: 401, message: 'Invalid email or password' });
+        return res.status(401).json({ status: 401, message: 'Invalid 2 email or password' });
       }
 
       // Générer un token JWT
       const token = jwt.sign(
         { id: user.id, email: user.email },
-        process.env.JWT_PASSPHRASE || 'KbPassword',
+        process.env.JWT_PASSPHRASE || 'SchedautPassword',
         { expiresIn: '1d' }
       );
 
