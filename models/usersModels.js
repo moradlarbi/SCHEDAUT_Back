@@ -13,6 +13,37 @@ export const getAllUsers = (req, res) => {
   });
 };
 
+// Create a new user
+export const createUserController = (req, res) => {
+  const { first_name, last_name, email, password, role } = req.body;
+  console.log(req.body);
+  if (!first_name || !last_name || !email || !password) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "Missing required fields" });
+  }
+
+  const query =
+    "INSERT INTO users (first_name, last_name, email, password, role) VALUES (?, ?, ?, ?, ?)";
+  db.query(
+    query,
+    [first_name, last_name, email, password, role || "student"],
+    (err, results) => {
+      if (err) {
+        console.error("Error creating user:", err);
+        return res
+          .status(500)
+          .json({ status: 500, message: "Internal Server Error" });
+      }
+      res.status(201).json({
+        status: 201,
+        message: "User created successfully",
+        data: { id: results.insertId, first_name, last_name, email, role },
+      });
+    }
+  );
+};
+
 export const getUserById = (req, res) => {
   const { id } = req.params;
   const query = "SELECT * FROM users WHERE id = ?";
