@@ -42,9 +42,9 @@ export const createClass = (classData) => {
 
 export const updateClass = (id, classData) => {
   return new Promise((resolve, reject) => {
-    const { name, nb_stud } = classData;
-    const query = "UPDATE class SET name = ?, nb_stud = ? WHERE id = ?";
-    db.query(query, [name, nb_stud, id], (err, results) => {
+    const { name, nb_stud, active } = classData;
+    const query = "UPDATE class SET name = ?, nb_stud = ?, active = ? WHERE id = ?";
+    db.query(query, [name, nb_stud,active, id], (err, results) => {
       if (err) {
         console.error("Error updating class:", err);
         return reject(err);
