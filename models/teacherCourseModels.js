@@ -43,7 +43,7 @@ const getTeacherCourseById = async (idTeacher, idCourse) => {
 // Delete a teacherCourse relationship by IDs
 const deleteTeacherCourse = async (idTeacher, idCourse) => {
   const query =
-    "DELETE FROM teacherCourse WHERE idTeacher = ? AND idCourse = ?";
+    "UPDATE teacherCourse SET active = false WHERE idTeacher = ? AND idCourse = ?";
   const [result] = await db.promise().query(query, [idTeacher, idCourse]);
   return result.affectedRows > 0;
 };

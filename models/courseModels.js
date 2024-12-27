@@ -2,7 +2,7 @@ import db from "../db.js";
 
 // Fetch all courses
 export const getAllCourses = (req, res) => {
-  const query = "SELECT * FROM course";
+  const query = "SELECT * FROM course AND active = 1 ";
   db.query(query, (err, results) => {
     if (err) {
       console.error("Error fetching courses:", err);
@@ -17,7 +17,7 @@ export const getAllCourses = (req, res) => {
 // Fetch a course by ID
 export const getCourseById = (req, res) => {
   const { id } = req.params;
-  const query = "SELECT * FROM course WHERE id = ?";
+  const query = "SELECT * FROM course WHERE id = ? AND active = 1";
   db.query(query, [id], (err, results) => {
     if (err) {
       console.error("Error fetching course by ID:", err);
@@ -86,16 +86,22 @@ export const updateCourse = (req, res) => {
 // Delete a course by ID
 export const deleteCourse = (req, res) => {
   const { id } = req.params;
-  const query = "DELETE FROM course WHERE id = ?";
+  const query = "UPDATE course SET active = false WHERE id = ?";
+
   db.query(query, [id], (err, results) => {
     if (err) {
-      console.error("Error deleting course:", err);
+      console.error("Error updating course:", err);
       return res
         .status(500)
         .json({ status: 500, message: "Internal Server Error" });
     }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ status: 404, message: "Course not found" });
+    }
+
     res
       .status(200)
-      .json({ status: 200, message: "Course deleted successfully" });
+      .json({ status: 200, message: "Course marked as inactive successfully" });
   });
 };
