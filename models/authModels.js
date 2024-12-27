@@ -1,13 +1,13 @@
-import db from '../db.js';
+import db from "../db.js";
 
 // Get the user's password by email
 export const getPassword = (email) => {
   return new Promise((resolve, reject) => {
-    const query = 'SELECT * FROM users WHERE email = ?';
-    console.log(query)
+    const query = "SELECT * FROM users WHERE email = ?";
+    console.log(query);
     db.query(query, [email], (err, results) => {
       if (err) {
-        console.error('Error getting password:', err);
+        console.error("Error getting password:", err);
         return reject(err);
       }
       if (results.length > 0) {
@@ -22,7 +22,13 @@ export const getPassword = (email) => {
 // Create a new user
 export const createUser = (userData) => {
   return new Promise((resolve, reject) => {
-    const { first_name, last_name, role = 'student', email, password } = userData;
+    const {
+      first_name,
+      last_name,
+      role = "student",
+      email,
+      password,
+    } = userData;
     const query = `
       INSERT INTO users (first_name, last_name, role, email, password)
       VALUES (?, ?, ?, ?, ?)
@@ -32,7 +38,7 @@ export const createUser = (userData) => {
       [first_name, last_name, role, email, password],
       (err, results) => {
         if (err) {
-          console.error('Error creating user:', err);
+          console.error("Error creating user:", err);
           return reject(err);
         }
         resolve({ id: results.insertId, ...userData });
@@ -41,14 +47,13 @@ export const createUser = (userData) => {
   });
 };
 
-
 // Get a user by ID
 export const getUser = (id) => {
   return new Promise((resolve, reject) => {
-    const query = 'SELECT * FROM users WHERE id = ?';
+    const query = "SELECT * FROM users WHERE id = ?";
     db.query(query, [id], (err, results) => {
       if (err) {
-        console.error('Error getting user:', err);
+        console.error("Error getting user:", err);
         return reject(err);
       }
       if (results.length > 0) {
@@ -63,10 +68,10 @@ export const getUser = (id) => {
 // Get a user by email
 export const getUserByEmail = (email) => {
   return new Promise((resolve, reject) => {
-    const query = 'SELECT * FROM users WHERE email = ?';
+    const query = "SELECT * FROM users WHERE email = ?";
     db.query(query, [email], (err, results) => {
       if (err) {
-        console.error('Error getting user by email:', err);
+        console.error("Error getting user by email:", err);
         return reject(err);
       }
       if (results.length > 0) {

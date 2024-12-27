@@ -1,82 +1,108 @@
 import express from "express";
-import { validateRequestBody } from "zod-express-middleware";
-import { z } from "zod";
-import { getAllClasses, getClassById, createClass, updateClass, deleteClass } from "../models/classModels.js";
+
+import {
+  createClass,
+  getClasses,
+  getClassById,
+  updateClass,
+  deleteClass,
+} from "../models/classModels.js";
 
 const router = express.Router();
 
-// Schema for validating request body
-const classSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  nb_stud: z.number().optional().default(0),
+// Create a new class
+router.post("/", async (req, res) => {
+  const { name, nb_stud } = req.body;
+  if (!name || !nb_stud) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "Missing required fields" });
+  }
+  try {
+    const newClass = await createClass(name, nb_stud);
+    res.status(201).json({
+      status: 201,
+      message: "Class created successfully",
+      data: newClass,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+
 });
 
 // Get all classes
 router.get("/", async (req, res) => {
   try {
-    const classes = await getAllClasses();
+
+    const classes = await getClasses();
     res.status(200).json({ status: 200, data: classes });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ status: 500, message: "Internal Server Error" });
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+
   }
 });
 
 // Get class by ID
 router.get("/:id", async (req, res) => {
+
+  const { id } = req.params;
   try {
-    const { id } = req.params;
     const classData = await getClassById(id);
-    if (!classData) {
-      return res.status(404).json({ status: 404, message: "Class not found" });
-    }
     res.status(200).json({ status: 200, data: classData });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ status: 500, message: "Internal Server Error" });
+    res.status(error.message === "Class not found" ? 404 : 500).json({
+      status: error.message === "Class not found" ? 404 : 500,
+      message: error.message,
+    });
   }
 });
 
-// Create a new class
-router.post(
-  "/",
-  validateRequestBody(classSchema),
-  async (req, res) => {
-    try {
-      const newClass = await createClass(req.body);
-      res.status(201).json({ status: 201, message: "Class created", data: newClass });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ status: 500, message: "Internal Server Error" });
-    }
-  }
-);
-
 // Update a class
-router.put(
-  "/:id",
-  validateRequestBody(classSchema),
-  async (req, res) => {
-    try {
-      const { id } = req.params;
-      const updatedClass = await updateClass(id, req.body);
-      res.status(200).json({ status: 200, message: "Class updated", data: updatedClass });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ status: 500, message: "Internal Server Error" });
-    }
+router.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, nb_stud } = req.body;
+  if (!name && !nb_stud) {
+    return res
+      .status(400)
+      .json({ status: 400, message: "No fields to update provided" });
   }
-);
-
-// Delete a class
-router.delete("/:id", async (req, res) => {
   try {
-    const { id } = req.params;
-    await deleteClass(id);
-    res.status(200).json({ status: 200, message: "Class deleted" });
+    const updatedClass = await updateClass(id, name, nb_stud);
+    res.status(200).json({
+      status: 200,
+      message: "Class updated successfully",
+      data: updatedClass,
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ status: 500, message: "Internal Server Error" });
+    res.status(error.message === "Class not found" ? 404 : 500).json({
+      status: error.message === "Class not found" ? 404 : 500,
+      message: error.message,
+    });
+  }
+});
+
+// Soft delete a class
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    await deleteClass(id);
+    res
+      .status(200)
+      .json({ status: 200, message: "Class deleted successfully" });
+  } catch (error) {
+    res.status(error.message === "Class not found" ? 404 : 500).json({
+      status: error.message === "Class not found" ? 404 : 500,
+      message: error.message,
+    });
   }
 });
 
