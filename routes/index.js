@@ -8,9 +8,6 @@ import teacherCourseRoutes from "./teacherCourse.js";
 import classCourseRoutes from "./classCourse.js";
 import classRoutes from "./classRoutes.js";
 
-import classRoutes from "./classRoutes.js";
-
-
 const router = express.Router();
 
 // Import route modules
@@ -27,6 +24,5 @@ router.use("/classCourses", classCourseRoutes);
 router.use("/classes", classRoutes);
 
 router.use("/class", classRoutes);
-
 
 export default router;
