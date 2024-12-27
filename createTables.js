@@ -53,7 +53,15 @@ CREATE TABLE IF NOT EXISTS event (
   FOREIGN KEY (idCourse) REFERENCES course(id) ON DELETE CASCADE
 );
 `;
-
+const createClassCourseTable = `
+CREATE TABLE IF NOT EXISTS classCourse (
+  idClass INT NOT NULL,
+  idCourse INT NOT NULL,
+  PRIMARY KEY (idClass, idCourse),
+  FOREIGN KEY (idClass) REFERENCES class(id) ON DELETE CASCADE,
+  FOREIGN KEY (idCourse) REFERENCES course(id) ON DELETE CASCADE
+)
+`;
 const executeQuery = (query) => {
     return new Promise((resolve, reject) => {
       db.query(query, (err, results, fields) => {
@@ -75,6 +83,7 @@ const executeQuery = (query) => {
       await executeQuery(createUserTable);
       await executeQuery(createTeacherCourseTable);
       await executeQuery(createEventTable);
+      await executeQuery(createClassCourseTable);
   
     } catch (err) {
       console.error('Error in tables:', err);

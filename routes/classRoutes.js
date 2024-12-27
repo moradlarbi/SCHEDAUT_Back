@@ -1,4 +1,5 @@
 import express from "express";
+
 import {
   createClass,
   getClasses,
@@ -31,11 +32,13 @@ router.post("/", async (req, res) => {
       error: error.message,
     });
   }
+
 });
 
 // Get all classes
 router.get("/", async (req, res) => {
   try {
+
     const classes = await getClasses();
     res.status(200).json({ status: 200, data: classes });
   } catch (error) {
@@ -44,11 +47,13 @@ router.get("/", async (req, res) => {
       message: "Internal Server Error",
       error: error.message,
     });
+
   }
 });
 
 // Get class by ID
 router.get("/:id", async (req, res) => {
+
   const { id } = req.params;
   try {
     const classData = await getClassById(id);

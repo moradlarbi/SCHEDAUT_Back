@@ -1,5 +1,4 @@
 import db from "../db.js";
-
 // Create a new class
 export const createClass = (name, nb_stud) => {
   return new Promise((resolve, reject) => {
