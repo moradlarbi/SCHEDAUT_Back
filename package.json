@@ -21,7 +21,9 @@
   },
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "lint": "eslint .",
+    "test": "jest"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"

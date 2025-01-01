@@ -1,0 +1,36 @@
+name: CI for the Backend
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+jobs:
+  backend-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run linting
+      run: npm run lint
+
+    - name: Run tests with coverage
+      run: npm test -- --coverage --watchAll=false
+
+    - name: Upload coverage results
+      uses: actions/upload-artifact@v3
+      with:
+        name: backend-coverage-report
+        path: coverage/
