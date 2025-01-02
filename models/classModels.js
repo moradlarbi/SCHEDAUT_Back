@@ -1,9 +1,9 @@
 import db from "../db.js";
 // Create a new class
-export const createClass = (name, nb_stud) => {
+export const createClass = (name, nb_stud,active) => {
   return new Promise((resolve, reject) => {
-    const query = "INSERT INTO class (name, nb_stud) VALUES (?, ?)";
-    db.query(query, [name, nb_stud], (err, results) => {
+    const query = "INSERT INTO class (name, nb_stud,active) VALUES (?, ?,?)";
+    db.query(query, [name, nb_stud,active], (err, results) => {
       if (err) {
         console.error("Error creating class:", err);
         reject(err);
@@ -17,7 +17,7 @@ export const createClass = (name, nb_stud) => {
 // Get all classes
 export const getClasses = () => {
   return new Promise((resolve, reject) => {
-    const query = "SELECT * FROM class WHERE active = 1";
+    const query = "SELECT * FROM class";
     db.query(query, (err, results) => {
       if (err) {
         console.error("Error retrieving classes:", err);
@@ -47,11 +47,11 @@ export const getClassById = (id) => {
 };
 
 // Update a class
-export const updateClass = (id, name, nb_stud) => {
+export const updateClass = (id, name, nb_stud,active) => {
   return new Promise((resolve, reject) => {
     const query =
-      "UPDATE class SET name = COALESCE(?, name), nb_stud = COALESCE(?, nb_stud) WHERE id = ?";
-    db.query(query, [name, nb_stud, id], (err, results) => {
+      "UPDATE class SET name = COALESCE(?, name), nb_stud = COALESCE(?, nb_stud),active=? WHERE id = ?";
+    db.query(query, [name, nb_stud,active, id], (err, results) => {
       if (err) {
         console.error("Error updating class:", err);
         reject(err);

@@ -2,7 +2,7 @@ import db from "../db.js";
 
 // Fetch all salles
 export const getAllSalles = (req, res) => {
-  const query = "SELECT * FROM classRoom WHERE active = 1";
+  const query = "SELECT * FROM classRoom";
   db.query(query, (err, results) => {
     if (err) {
       console.error("Error fetching salles:", err);
@@ -34,7 +34,7 @@ export const getSalleById = (req, res) => {
 
 // Create a new salle
 export const createSalle = (req, res) => {
-  const { name, capacity } = req.body;
+  const { name, capacity,active } = req.body;
 
   if (!name || capacity === undefined) {
     return res
@@ -42,8 +42,8 @@ export const createSalle = (req, res) => {
       .json({ status: 400, message: "Missing required fields" });
   }
 
-  const query = "INSERT INTO classRoom (name, capacity) VALUES (?, ?)";
-  db.query(query, [name, capacity], (err, results) => {
+  const query = "INSERT INTO classRoom (name, capacity,active) VALUES (?, ?, ?)";
+  db.query(query, [name, capacity,active], (err, results) => {
     if (err) {
       console.error("Error creating salle:", err);
       return res
@@ -61,7 +61,7 @@ export const createSalle = (req, res) => {
 // Update a salle by ID
 export const updateSalle = (req, res) => {
   const { id } = req.params;
-  const { name, capacity } = req.body;
+  const { name, capacity,active } = req.body;
 
   if (!name || capacity === undefined) {
     return res
@@ -69,8 +69,8 @@ export const updateSalle = (req, res) => {
       .json({ status: 400, message: "Missing required fields" });
   }
 
-  const query = "UPDATE classRoom SET name = ?, capacity = ? WHERE id = ?";
-  db.query(query, [name, capacity, id], (err, results) => {
+  const query = "UPDATE classRoom SET name = ?, capacity = ?, active=? WHERE id = ?";
+  db.query(query, [name, capacity,active, id], (err, results) => {
     if (err) {
       console.error("Error updating salle:", err);
       return res

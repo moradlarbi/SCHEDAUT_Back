@@ -2,7 +2,7 @@ import db from "../db.js";
 
 // Fetch all courses
 export const getAllCourses = (req, res) => {
-  const query = "SELECT * FROM course AND active = 1 ";
+  const query = "SELECT * FROM course";
   db.query(query, (err, results) => {
     if (err) {
       console.error("Error fetching courses:", err);
@@ -34,16 +34,16 @@ export const getCourseById = (req, res) => {
 
 // Create a new course
 export const createCourse = (req, res) => {
-  const { name, nb_hour } = req.body;
-
+  const { name, nb_hour,active } = req.body;
+  console.log(req.body)
   if (!name || nb_hour === undefined) {
     return res
       .status(400)
       .json({ status: 400, message: "Missing required fields" });
   }
 
-  const query = "INSERT INTO course (name, nb_hour) VALUES (?, ?)";
-  db.query(query, [name, nb_hour], (err, results) => {
+  const query = "INSERT INTO course (name, nb_hour,active) VALUES (?, ?, ?)";
+  db.query(query, [name, nb_hour,active], (err, results) => {
     if (err) {
       console.error("Error creating course:", err);
       return res
@@ -53,7 +53,7 @@ export const createCourse = (req, res) => {
     res.status(201).json({
       status: 201,
       message: "Course created successfully",
-      data: { id: results.insertId, name, nb_hour },
+      data: { id: results.insertId, name, nb_hour,active },
     });
   });
 };
@@ -61,7 +61,7 @@ export const createCourse = (req, res) => {
 // Update a course by ID
 export const updateCourse = (req, res) => {
   const { id } = req.params;
-  const { name, nb_hour } = req.body;
+  const { name, nb_hour,active } = req.body;
 
   if (!name || nb_hour === undefined) {
     return res
@@ -69,8 +69,8 @@ export const updateCourse = (req, res) => {
       .json({ status: 400, message: "Missing required fields" });
   }
 
-  const query = "UPDATE course SET name = ?, nb_hour = ? WHERE id = ?";
-  db.query(query, [name, nb_hour, id], (err, results) => {
+  const query = "UPDATE course SET name = ?, nb_hour = ?, active= ? WHERE id = ?";
+  db.query(query, [name, nb_hour,active, id], (err, results) => {
     if (err) {
       console.error("Error updating course:", err);
       return res

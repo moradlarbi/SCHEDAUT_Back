@@ -12,14 +12,14 @@ const router = express.Router();
 
 // Create a new class
 router.post("/", async (req, res) => {
-  const { name, nb_stud } = req.body;
+  const { name, nb_stud,active } = req.body;
   if (!name || !nb_stud) {
     return res
       .status(400)
       .json({ status: 400, message: "Missing required fields" });
   }
   try {
-    const newClass = await createClass(name, nb_stud);
+    const newClass = await createClass(name, nb_stud,active);
     res.status(201).json({
       status: 201,
       message: "Class created successfully",
@@ -69,14 +69,14 @@ router.get("/:id", async (req, res) => {
 // Update a class
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
-  const { name, nb_stud } = req.body;
+  const { name, nb_stud,active } = req.body;
   if (!name && !nb_stud) {
     return res
       .status(400)
       .json({ status: 400, message: "No fields to update provided" });
   }
   try {
-    const updatedClass = await updateClass(id, name, nb_stud);
+    const updatedClass = await updateClass(id, name, nb_stud,active);
     res.status(200).json({
       status: 200,
       message: "Class updated successfully",
