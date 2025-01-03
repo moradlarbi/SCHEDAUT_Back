@@ -13,7 +13,18 @@ export const getAllCourses = (req, res) => {
     res.status(200).json({ status: 200, message: "OK", data: results });
   });
 };
-
+export const getActiveCourses = (req, res) => {
+  const query = "SELECT * FROM course where active = 1";
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching courses:", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal Server Error" });
+    }
+    res.status(200).json({ status: 200, message: "OK", data: results });
+  });
+};
 // Fetch a course by ID
 export const getCourseById = (req, res) => {
   const { id } = req.params;

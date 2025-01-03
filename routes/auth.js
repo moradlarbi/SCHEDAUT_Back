@@ -91,11 +91,13 @@ router.post(
 
       // Vérifier le mot de passe
       console.log(user);
-      const isPasswordCorrect = await bcrypt.compareSync(
+      const isPasswordCorrect = bcrypt.compareSync(
         password,
         user.password
       );
-      console.log(isPasswordCorrect);
+      console.log(isPasswordCorrect, user.password, password);
+
+
       if (!isPasswordCorrect) {
         return res
           .status(401)

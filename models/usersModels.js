@@ -37,7 +37,37 @@ export const getAllUsers = (req, res) => {
     });
   });
 };
+export const getTeachers = (req, res) => {
+  const query = `SELECT 
+  A.*, 
+  B.id AS idCl, 
+  B.name AS className,
+  GROUP_CONCAT(C.idCourse) AS idCourses
+FROM 
+  users A
+LEFT JOIN 
+  class B ON A.idClass = B.id
+LEFT JOIN 
+  teacherCourse C ON A.id = C.idTeacher
+WHERE 
+  A.role = 'teacher' AND A.active = 1
+GROUP BY 
+  A.id;`;
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching courses:", err);
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal Server Error" });
+    }
+    const users = results.map(user => ({
+      ...user,
+      idCourses: user.idCourses ? user.idCourses.split(",").map(Number) : [], // Convert idCourses to an array
+    }));
+    res.status(200).json({ status: 200, message: "OK", data: users });
+  });
 
+}
 
 // Create a new user
 export const createUserController = (req, res) => {
