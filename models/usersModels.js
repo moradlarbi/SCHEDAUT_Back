@@ -70,7 +70,7 @@ GROUP BY
 }
 
 // Create a new user
-export const createUserController = (req, res) => {
+export const createUserController = async (req, res) => {
   const { first_name, last_name, email, password, role, idClass, active, idCourses } = req.body;
 
   // Validate required fields
@@ -101,9 +101,10 @@ export const createUserController = (req, res) => {
         .status(400)
         .json({ status: 400, message: "Courses is required for teachers" });
     }
+    const hashedPassword = await bcrypt.hash(password, 10);
     query =
       "INSERT INTO users (first_name, last_name, email, password, role, active) VALUES (?, ?, ?, ?, ?, ?)";
-    values = [first_name, last_name, email, password, role, active];
+    values = [first_name, last_name, email, hashedPassword, role, active];
   }
 
   // Execute the user insertion query

@@ -97,7 +97,6 @@ router.post(
       );
       console.log(isPasswordCorrect, user.password, password);
 
-
       if (!isPasswordCorrect) {
         return res
           .status(401)
