@@ -1,18 +1,91 @@
 import db from "../db.js";
 
 // Fetch all events
-export const getAllEvents = (req, res) => {
-  const query = "SELECT * FROM event AND active = 1";
-  db.query(query, (err, results) => {
+export const getEventsByClass = (req, res) => {
+  console.log(req.params);
+  const idClass = req.params.idClass;
+
+  const query = `
+    SELECT 
+      e.startTime as start,
+      e.endTime as end,
+      CONCAT(u.first_name, ' ', u.last_name) AS teacher,
+      c.name AS class,
+      co.name AS title
+    FROM 
+      event e
+    JOIN 
+      users u ON e.idTeacher = u.id
+    JOIN 
+      class c ON e.idClass = c.id
+    JOIN 
+      course co ON e.idCourse = co.id
+    WHERE 
+      e.idClass = ?;
+  `;
+
+  db.query(query, [idClass], (err, results) => {
     if (err) {
       console.error("Error fetching events:", err);
-      return res
-        .status(500)
-        .json({ status: 500, message: "Internal Server Error" });
+      return res.status(500).json({ status: 500, message: "Internal Server Error" });
     }
-    res.status(200).json({ status: 200, message: "OK", data: results });
+
+    const BREAKS = [
+      { start: "10:30:00", end: "10:45:00" },
+      { start: "14:30:00", end: "14:45:00" },
+    ];
+
+    const processedResults = [];
+
+    results.forEach(event => {
+      const eventStart = new Date(event.start);
+      const eventEnd = new Date(event.end);
+
+      let shouldSplit = false;
+
+      BREAKS.forEach(breakPeriod => {
+        const breakStart = new Date(eventStart.toISOString().split("T")[0] + "T" + breakPeriod.start);
+        const breakEnd = new Date(eventStart.toISOString().split("T")[0] + "T" + breakPeriod.end);
+
+        // Check if event overlaps with break
+        if (eventStart < breakEnd && eventEnd > breakStart) {
+          shouldSplit = true;
+
+          // If the event starts before the break, add the first part
+          if (eventStart < breakStart) {
+            processedResults.push({
+              ...event,
+              start: event.start,
+              end: breakStart.toISOString(),
+            });
+          }
+
+          // If the event ends after the break, add the second part
+          if (eventEnd > breakEnd) {
+            processedResults.push({
+              ...event,
+              start: breakEnd.toISOString(),
+              end: event.end,
+            });
+          }
+        }
+      });
+
+      // If no split is required, push the event as is
+      if (!shouldSplit) {
+        processedResults.push({
+          ...event,
+          start: event.start.toISOString(),
+          end: event.end.toISOString(),
+        });
+      }
+    });
+
+    res.status(200).json({ status: 200, message: "OK", data: processedResults });
   });
 };
+
+
 
 // Fetch an event by startTime and endTime
 export const getEventById = (req, res) => {

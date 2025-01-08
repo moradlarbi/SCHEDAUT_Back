@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  getAllEvents,
+  getEventsByClass,
   getEventById,
   createEvent,
   updateEvent,
@@ -12,7 +12,7 @@ import {
 const router = express.Router();
 
 // Routes
-router.get("/", getAllEvents); // Fetch all events
+router.get("/class/:idClass", getEventsByClass); // Fetch all events
 router.get("/:startTime/:endTime", getEventById); // Fetch an event by startTime and endTime
 router.post("/", createEvent); // Create a new event
 router.put("/:startTime/:endTime", updateEvent); // Update an event by startTime and endTime

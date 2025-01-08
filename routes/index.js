@@ -21,7 +21,6 @@ router.use("/course", courseRoutes); // Add course routes
 router.use("/event", eventRoutes); // Add event routes
 router.use("/teacherCourses", teacherCourseRoutes);
 router.use("/classCourses", classCourseRoutes);
-router.use("/classes", classRoutes);
 
 router.use("/class", classRoutes);
 
