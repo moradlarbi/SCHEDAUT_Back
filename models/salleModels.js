@@ -1,5 +1,5 @@
 import db from "../db.js";
-
+import amqp from "amqplib";
 // Fetch all salles
 export const getAllSalles = (req, res) => {
   const query = "SELECT * FROM classRoom";
@@ -31,6 +31,25 @@ export const getSalleById = (req, res) => {
     res.status(200).json({ status: 200, message: "OK", data: results[0] });
   });
 };
+const queue = 'hello_queue';
+
+async function sendMessage() {
+    try {
+        const connection = await amqp.connect('https://ominous-system-j76vgq9q4qghq7pq-5672.app.github.dev:5672');
+        const channel = await connection.createChannel();
+        await channel.assertQueue(queue, { durable: false });
+
+        const message = 'Hello, World!';
+        channel.sendToQueue(queue, Buffer.from(message));
+        console.log(`Message sent: ${message}`);
+
+        setTimeout(() => {
+            connection.close();
+        }, 500);
+    } catch (error) {
+        console.error('Error sending message:', error);
+    }
+}
 
 // Create a new salle
 export const createSalle = (req, res) => {
