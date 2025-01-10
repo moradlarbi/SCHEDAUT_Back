@@ -1,14 +1,13 @@
-name: CI for the Backend
+name: Linting CI for the Backend
 
 on:
-  push:
+  pull_request:
     branches:
       - main
       - develop
-  pull_request:
 
 jobs:
-  backend-build:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,14 +22,23 @@ jobs:
     - name: Install dependencies
       run: yarn install
 
-    - name: Run linting
-      run: yarn run lint
+    - name: Run linting with ESLint
+      run: yarn lint
 
-    - name: Run tests with coverage
-      run: yarn test -- --coverage --watchAll=false
+  audit:
+    runs-on: ubuntu-latest
 
-    - name: Upload coverage results
-      uses: actions/upload-artifact@v3
+    steps:
+    - name: Checkout the repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js for audit
+      uses: actions/setup-node@v3
       with:
-        name: backend-coverage-report
-        path: coverage/
+        node-version: '18.x'
+
+    - name: Install dependencies
+      run: yarn install
+
+    - name: Run audit with `npx audit-ci`
+      run: npx audit-ci --level high --verbose
