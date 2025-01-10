@@ -21,13 +21,13 @@ jobs:
         node-version: '18.x'
 
     - name: Install dependencies
-      run: npm install
+      run: yarn install
 
     - name: Run linting
-      run: npm run lint
+      run: yarn run lint
 
     - name: Run tests with coverage
-      run: npm test -- --coverage --watchAll=false
+      run: yarn test -- --coverage --watchAll=false
 
     - name: Upload coverage results
       uses: actions/upload-artifact@v3
