@@ -9,8 +9,8 @@ export const getEventsByClass = (req, res) => {
       e.startTime as start,
       e.endTime as end,
       CONCAT(u.first_name, ' ', u.last_name) AS teacher,
-      c.name AS class,
-      co.name AS title
+      co.name AS title,
+      cr.name as salle
     FROM 
       event e
     JOIN 
@@ -19,6 +19,8 @@ export const getEventsByClass = (req, res) => {
       class c ON e.idClass = c.id
     JOIN 
       course co ON e.idCourse = co.id
+    JOIN
+      classRoom cr ON e.idClassRoom = cr.id
     WHERE 
       e.idClass = ?;
   `;
@@ -91,7 +93,8 @@ export const getEventsByTeacher = (req, res) => {
       e.startTime as start,
       e.endTime as end,
       c.name AS class,
-      co.name AS title
+      co.name AS title,
+      cr.name as salle
     FROM 
       event e
     JOIN 
@@ -100,6 +103,8 @@ export const getEventsByTeacher = (req, res) => {
       class c ON e.idClass = c.id
     JOIN 
       course co ON e.idCourse = co.id
+    JOIN
+      classRoom cr ON e.idClassRoom = cr.id
     WHERE 
       e.idTeacher = ?;
   `;

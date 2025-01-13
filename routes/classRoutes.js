@@ -11,11 +11,11 @@ import {
   addCourseTeacherRelationship,
   deleteCourseTeacherRelationship
 } from "../models/classModels.js";
-
+import isUserMidd from "../middlewares/authentification.js"
 const router = express.Router();
 
 // Create a new class
-router.post("/", async (req, res) => {
+router.post("/",isUserMidd, async (req, res) => {
   const { name, nb_stud, active, courseTeachers } = req.body;
 
   if (!name || !nb_stud || !Array.isArray(courseTeachers)) {
@@ -63,7 +63,7 @@ router.post("/", async (req, res) => {
 
 
 // Get all classes
-router.get("/", async (req, res) => {
+router.get("/",isUserMidd, async (req, res) => {
   const query = `
     SELECT 
         c.id AS classId,
@@ -141,7 +141,7 @@ router.get("/", async (req, res) => {
 
 
 // Get class by ID
-router.get("/:id", async (req, res) => {
+router.get("/:id",isUserMidd, async (req, res) => {
 
   const { id } = req.params;
   try {
@@ -156,7 +156,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update a class
-router.put("/:id", async (req, res) => {
+router.put("/:id",isUserMidd, async (req, res) => {
   const { id } = req.params;
   const { name, nb_stud, active, courseTeachers } = req.body;
 
@@ -219,7 +219,7 @@ router.put("/:id", async (req, res) => {
 
 
 // Soft delete a class
-router.delete("/:id", async (req, res) => {
+router.delete("/:id",isUserMidd, async (req, res) => {
   const { id } = req.params;
   try {
     await deleteClass(id);
