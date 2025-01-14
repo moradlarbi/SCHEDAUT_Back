@@ -1,4 +1,4 @@
-# SCHEDAUT_Back
+# SmartSched_Back
 
 ## Database Connection
 To connect to the database using Docker, run:
