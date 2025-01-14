@@ -14,6 +14,43 @@ import bcrypt from "bcryptjs";
 const router = express.Router();
 
 // Route pour l'inscription
+/**
+ * @swagger
+ * /signup:
+ *   post:
+ *     summary: User registration
+ *     tags: [Authentication]
+ *     description: Register a new user.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: User email
+ *               password:
+ *                 type: string
+ *                 description: User password
+ *               first_name:
+ *                 type: string
+ *                 description: First name of the user
+ *               last_name:
+ *                 type: string
+ *                 description: Last name of the user
+ *               role:
+ *                 type: string
+ *                 description: Role of the user (default is "student")
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *       400:
+ *         description: Email already exists
+ *       500:
+ *         description: Internal Server Error
+ */
 router.post(
   "/signup",
   validateRequestBody(
@@ -66,6 +103,34 @@ router.post(
   }
 );
 
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: User login
+ *     tags: [Authentication]
+ *     description: Authenticate a user with email and password.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: User email
+ *               password:
+ *                 type: string
+ *                 description: User password
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       401:
+ *         description: Invalid email or password
+ *       500:
+ *         description: Internal Server Error
+ */
 // Route pour la connexion
 router.post(
   "/login",
@@ -91,10 +156,7 @@ router.post(
 
       // Vérifier le mot de passe
       console.log(user);
-      const isPasswordCorrect = bcrypt.compareSync(
-        password,
-        user.password
-      );
+      const isPasswordCorrect = bcrypt.compareSync(password, user.password);
       console.log(isPasswordCorrect, user.password, password);
 
       if (!isPasswordCorrect) {
@@ -126,12 +188,38 @@ router.post(
     }
   }
 );
-
+/**
+ * @swagger
+ * /isAuthenticated:
+ *   get:
+ *     summary: Check authentication status
+ *     tags: [Authentication]
+ *     description: Verify if the user is authenticated.
+ *     responses:
+ *       200:
+ *         description: Authentication successful
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
+ */
 // Vérification de l'authentification
 router.get("/isAuthenticated", isUserMidd, async (req, res) => {
   res.status(200).json({ status: 200, message: "OK", data: req.user });
 });
-
+/**
+ * @swagger
+ * /logout:
+ *   get:
+ *     summary: User logout
+ *     tags: [Authentication]
+ *     description: Log out the user and clear the authentication token.
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ *       500:
+ *         description: Internal Server Error
+ */
 // Déconnexion
 router.get("/logout", (_req, res) => {
   try {

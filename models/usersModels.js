@@ -21,11 +21,13 @@ export const getAllUsers = (req, res) => {
   db.query(query, (err, results) => {
     if (err) {
       console.error("Error fetching users:", err);
-      return res.status(500).json({ status: 500, message: "Internal Server Error" });
+      return res
+        .status(500)
+        .json({ status: 500, message: "Internal Server Error" });
     }
 
     // Transform the results
-    const users = results.map(user => ({
+    const users = results.map((user) => ({
       ...user,
       idCourses: user.idCourses ? user.idCourses.split(",").map(Number) : [], // Convert idCourses to an array
     }));
@@ -60,18 +62,26 @@ GROUP BY
         .status(500)
         .json({ status: 500, message: "Internal Server Error" });
     }
-    const users = results.map(user => ({
+    const users = results.map((user) => ({
       ...user,
       idCourses: user.idCourses ? user.idCourses.split(",").map(Number) : [], // Convert idCourses to an array
     }));
     res.status(200).json({ status: 200, message: "OK", data: users });
   });
-
-}
+};
 
 // Create a new user
 export const createUserController = async (req, res) => {
-  const { first_name, last_name, email, password, role, idClass, active, idCourses } = req.body;
+  const {
+    first_name,
+    last_name,
+    email,
+    password,
+    role,
+    idClass,
+    active,
+    idCourses,
+  } = req.body;
 
   // Validate required fields
   if (!first_name || !last_name || !email || !password) {
@@ -122,7 +132,8 @@ export const createUserController = async (req, res) => {
     if (role === "teacher") {
       const courseQueries = idCourses.map((idCourse) => {
         return new Promise((resolve, reject) => {
-          const courseQuery = "INSERT INTO teacherCourse (idTeacher, idCourse) VALUES (?, ?)";
+          const courseQuery =
+            "INSERT INTO teacherCourse (idTeacher, idCourse) VALUES (?, ?)";
           db.query(courseQuery, [userId, idCourse], (err, result) => {
             if (err) return reject(err);
             resolve(result);
@@ -170,7 +181,6 @@ export const createUserController = async (req, res) => {
     }
   });
 };
-
 
 export const getUserById = (req, res) => {
   const { id } = req.params;
@@ -227,10 +237,18 @@ export const findById = (id, callback) => {
   db.query(query, [id], callback);
 };
 
-
 export const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { first_name, last_name, email, password, role, active, idClass, idCourses } = req.body;
+  const {
+    first_name,
+    last_name,
+    email,
+    password,
+    role,
+    active,
+    idClass,
+    idCourses,
+  } = req.body;
 
   // Vérification des champs requis
   if (!first_name || !last_name || !email || !password) {
@@ -239,7 +257,7 @@ export const updateUser = async (req, res) => {
       .json({ status: 400, message: "Missing required fields" });
   }
 
-   const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   // Définir la requête de base pour mettre à jour l'utilisateur
   const query =
@@ -259,7 +277,8 @@ export const updateUser = async (req, res) => {
       // Si l'utilisateur est un enseignant, gérer les cours
       if (role === "teacher") {
         // Supprimer les anciens cours pour cet enseignant
-        const deleteCoursesQuery = "DELETE FROM teacherCourse WHERE idTeacher = ?";
+        const deleteCoursesQuery =
+          "DELETE FROM teacherCourse WHERE idTeacher = ?";
         db.query(deleteCoursesQuery, [id], (deleteErr) => {
           if (deleteErr) {
             console.error("Error deleting courses:", deleteErr);
@@ -270,7 +289,8 @@ export const updateUser = async (req, res) => {
 
           // Insérer les nouveaux cours si `idCourses` est fourni
           if (idCourses && Array.isArray(idCourses) && idCourses.length > 0) {
-            const insertCoursesQuery = "INSERT INTO teacherCourse (idTeacher, idCourse) VALUES ?";
+            const insertCoursesQuery =
+              "INSERT INTO teacherCourse (idTeacher, idCourse) VALUES ?";
             const courseValues = idCourses.map((courseId) => [id, courseId]);
             db.query(insertCoursesQuery, [courseValues], (insertErr) => {
               if (insertErr) {
@@ -304,7 +324,6 @@ export const updateUser = async (req, res) => {
     }
   );
 };
-
 
 export const deleteUserController = (req, res) => {
   const { id } = req.params;
